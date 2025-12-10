@@ -1,15 +1,13 @@
-package com.example.database
+package com.example.database.Ui.Screen
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.RadioButton
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.example.database.Local.StudentDataBase
+import com.example.database.R
 
 class AddStudentActivity : AppCompatActivity() {
     lateinit var etName : EditText
@@ -35,17 +33,16 @@ class AddStudentActivity : AppCompatActivity() {
         rbFemale = findViewById(R.id.rbFemale)
 
         btAdd.setOnClickListener {
-            val intent = Intent()
+            val name = etName.text.toString()
+            val grade = etGrade.text.toString()
+            val roomNo = etRoomNo.text.toString().toIntOrNull() ?: 0
+            val father = etPName.text.toString()
+            val gender = if (rbMale.isChecked) "Male" else "Female"
 
-            intent.putExtra("name", etName.text.toString())
-            intent.putExtra("grade", etGrade.text.toString())
-            intent.putExtra("roomNo", etRoomNo.text.toString())
-            intent.putExtra("gender", if (rbMale.isChecked) "Male" else "Female")
-            intent.putExtra("fatherName", etPName.text.toString())
+            val db = StudentDataBase(this)
+            db.insertStudent(name, grade, roomNo, gender, father)
 
-            setResult(RESULT_OK, intent)
-            finish()
-
+            finish() // return to MainActivity
         }
 
     }

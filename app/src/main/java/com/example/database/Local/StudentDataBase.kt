@@ -9,12 +9,12 @@ import com.example.database.Model.StudentModel
 class StudentDataBase(context: Context) :
     SQLiteOpenHelper(context, "Student_DB", null, 1) {
 
-    private val TBL_STUDENT = "STUDENT_TABLE"
+    private val TBL_STUDENT = "tbl_student"
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val createTable = """
+        val query = """
             CREATE TABLE $TBL_STUDENT(
-                studentID INTEGER PRIMARY KEY AUTOINCREMENT,
+                student_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT,
                 grade TEXT,
                 roomNo INTEGER,
@@ -23,13 +23,10 @@ class StudentDataBase(context: Context) :
             )
         """.trimIndent()
 
-        db?.execSQL(createTable)
+        db?.execSQL(query)
     }
 
-    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        db?.execSQL("DROP TABLE IF EXISTS $TBL_STUDENT")
-        onCreate(db)
-    }
+    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {}
 
     /** Insert a new student */
     fun insertStudent(
@@ -66,7 +63,7 @@ class StudentDataBase(context: Context) :
         if (cursor.moveToFirst()) {
             do {
                 val student = StudentModel(
-                    studentId = cursor.getInt(cursor.getColumnIndexOrThrow("studentID")),
+                    studentId = cursor.getInt(cursor.getColumnIndexOrThrow("student_id")),
                     name = cursor.getString(cursor.getColumnIndexOrThrow("name")),
                     grade = cursor.getString(cursor.getColumnIndexOrThrow("grade")),
                     roomNo = cursor.getInt(cursor.getColumnIndexOrThrow("roomNo")),

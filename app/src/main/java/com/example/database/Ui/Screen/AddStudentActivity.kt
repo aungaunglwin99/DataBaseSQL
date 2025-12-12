@@ -1,6 +1,5 @@
 package com.example.database.Ui.Screen
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -10,12 +9,12 @@ import com.example.database.Local.StudentDataBase
 import com.example.database.R
 
 class AddStudentActivity : AppCompatActivity() {
-    lateinit var etName : EditText
-    lateinit var etRoomNo : EditText
-    lateinit var etGrade : EditText
+    lateinit var etName: EditText
+    lateinit var etRoomNo: EditText
+    lateinit var etGrade: EditText
 
-    lateinit var etPName : EditText
-    lateinit var btAdd : Button
+    lateinit var etPName: EditText
+    lateinit var btAdd: Button
 
     lateinit var rbMale: RadioButton
     lateinit var rbFemale: RadioButton

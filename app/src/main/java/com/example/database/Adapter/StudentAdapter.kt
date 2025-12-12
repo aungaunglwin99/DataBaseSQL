@@ -15,7 +15,7 @@ class StudentAdapter(val list : ArrayList<StudentModel>) : RecyclerView.Adapter<
         viewType: Int
     ): StudentViewHolder {
         val v = LayoutInflater.from(parent.context)
-            .inflate(R.layout.list_student, parent, false)
+            .inflate(R.layout.list_item_student, parent, false)
         return StudentViewHolder(v)
 
     }
@@ -41,7 +41,7 @@ class StudentAdapter(val list : ArrayList<StudentModel>) : RecyclerView.Adapter<
 
 
 
-    class StudentViewHolder(val v : View) : RecyclerView.ViewHolder(v){
+    class StudentViewHolder(v : View) : RecyclerView.ViewHolder(v){
         val tvName : TextView = v.findViewById(R.id.tvName)
         val tvRoomNo : TextView = v.findViewById(R.id.tvRoomNo)
         val ivGender : ImageView = v.findViewById(R.id.ivGender)

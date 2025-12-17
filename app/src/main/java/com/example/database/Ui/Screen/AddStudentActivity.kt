@@ -1,48 +1,81 @@
 package com.example.database.Ui.Screen
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
 import com.example.database.Local.StudentDataBase
+import com.example.database.Model.StudentModel
 import com.example.database.R
+import com.example.database.databinding.ActivityAddStudentBinding
 
 class AddStudentActivity : AppCompatActivity() {
-    lateinit var etName: EditText
-    lateinit var etRoomNo: EditText
-    lateinit var etGrade: EditText
-
-    lateinit var etPName: EditText
-    lateinit var btAdd: Button
-
-    lateinit var rbMale: RadioButton
-    lateinit var rbFemale: RadioButton
+    private val binding by lazy { ActivityAddStudentBinding.inflate(layoutInflater) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_student)
+        setContentView(binding.root)
 
-        etName = findViewById(R.id.etName)
-        etRoomNo = findViewById(R.id.etRoomNo)
-        etGrade = findViewById(R.id.etGrade)
-        etPName = findViewById(R.id.etPName)
-        btAdd = findViewById(R.id.btAdd)
-        rbMale = findViewById(R.id.rbMale)
-        rbFemale = findViewById(R.id.rbFemale)
+        val db = StudentDataBase(this)
 
-        btAdd.setOnClickListener {
-            val name = etName.text.toString()
-            val grade = etGrade.text.toString()
-            val roomNo = etRoomNo.text.toString().toIntOrNull() ?: 0
-            val father = etPName.text.toString()
-            val gender = if (rbMale.isChecked) "Male" else "Female"
+        val student = intent.getParcelableExtra<StudentModel>("student")
 
-            val db = StudentDataBase(this)
-            db.insertStudent(name, grade, roomNo, gender, father)
+        binding.apply {
+            tbInclude.tbMain.title = if (student != null) "Edit Student" else "Add Students"
+            btAdd.text = if (student != null) "Update Student" else "Add Student"
 
-            finish() // return to MainActivity
+            if (student != null) {
+                setExistingData(
+                    name = student.name,
+                    grade = student.grade,
+                    roomNo = student.roomNo.toString(),
+                    gender = student.gender,
+                    fatherName = student.fatherName
+                )
+            }
+            btAdd.setOnClickListener {
+                val name = etName.text.toString()
+                val grade = etGrade.text.toString()
+                val roomNo = etRoomNo.text.toString().toIntOrNull() ?: 0
+                val gender = if (rbMale.isChecked) "Male" else "Female"
+                val fatherName = etPName.text.toString()
+
+                if (student != null) {
+                    db.updateStudent(
+                        studentId = student.studentId,
+                        name,
+                        grade,
+                        roomNo,
+                        gender,
+                        fatherName
+                    )
+                } else {
+                    db.insertStudent(name, grade, roomNo, gender, fatherName)
+                }
+
+                finish()
+            }
+
         }
-
     }
+
+
+    @SuppressLint("ResourceType")
+    fun setExistingData(
+        name: String,
+        grade: String,
+        roomNo: String,
+        gender: String,
+        fatherName: String
+    ) = with(binding) {
+        etName.setText(name)
+        etGrade.setText(grade)
+        etRoomNo.setText(roomNo)
+        etPName.setText(fatherName)
+        if (gender == "Male") {
+            rgGender.check(rbMale.id)
+        } else {
+            rgGender.check(rbFemale.id)
+        }
+    }
+
 }

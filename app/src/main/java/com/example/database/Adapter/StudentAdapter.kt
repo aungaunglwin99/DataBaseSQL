@@ -1,18 +1,15 @@
 package com.example.database.Adapter
 
-import android.app.AlertDialog
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.database.R
 import com.example.database.Model.StudentModel
+import com.example.database.R
 
 class StudentAdapter(
-    private val context: Context,
     private val list: ArrayList<StudentModel>,
     private val onEditClick: (StudentModel) -> Unit,
     private val onDeleteClick: (StudentModel) -> Unit
@@ -36,20 +33,7 @@ class StudentAdapter(
 
         holder.ivEdit.setOnClickListener { onEditClick(item) }
 
-        holder.ivDelete.setOnClickListener {
-            // Show confirmation dialog
-            AlertDialog.Builder(context)
-                .setTitle("Delete Student")
-                .setMessage("Are you sure you want to delete ${item.name}?")
-                .setPositiveButton("Yes") { dialog, _ ->
-                    onDeleteClick(item)
-                    dialog.dismiss()
-                }
-                .setNegativeButton("No") { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
-        }
+        holder.ivDelete.setOnClickListener { onDeleteClick(item) }
     }
 
     override fun getItemCount() = list.size

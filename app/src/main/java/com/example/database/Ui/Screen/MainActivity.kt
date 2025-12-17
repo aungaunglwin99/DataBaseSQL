@@ -1,44 +1,44 @@
 package com.example.database.Ui.Screen
 
+import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.database.Adapter.StudentAdapter
 import com.example.database.Local.StudentDataBase
 import com.example.database.Model.StudentModel
-import com.example.database.R
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.example.database.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var rvStudent: RecyclerView
-    private lateinit var fbAdd: FloatingActionButton
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private lateinit var studentDataBase: StudentDataBase
     private lateinit var adapter: StudentAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
-        rvStudent = findViewById(R.id.rvStudent)
-        fbAdd = findViewById(R.id.fbAdd)
         studentDataBase = StudentDataBase(this)
 
-        rvStudent.layoutManager = LinearLayoutManager(this)
+        binding.apply {
+            tbInclude.tbMain.title = "Students"
 
-        // Initialize adapter with callbacks for edit and delete
-        adapter = StudentAdapter(
-            this,
-            studentDataBase.getAllStudents(),
-            onEditClick = { student -> editStudent(student) },
-            onDeleteClick = { student -> deleteStudent(student) }
-        )
-        rvStudent.adapter = adapter
+            adapter = StudentAdapter(
+                list = studentDataBase.getAllStudents(),
+                onEditClick = { student -> editStudent(student) },
+                onDeleteClick = { student ->
+                    deleteStudent(
+                        context = this@MainActivity,
+                        student = student
+                    )
+                }
+            )
+            rvStudent.adapter = adapter
 
-        fbAdd.setOnClickListener {
-            startActivity(Intent(this, AddStudentActivity::class.java))
+            fbAdd.setOnClickListener {
+                startActivity(Intent(this@MainActivity, AddStudentActivity::class.java))
+            }
         }
     }
 
@@ -50,20 +50,34 @@ class MainActivity : AppCompatActivity() {
 
     // Open edit screen with student data
     private fun editStudent(student: StudentModel) {
-        val intent = Intent(this, EditStudentActivity::class.java).apply {
-            putExtra("studentId", student.studentId)
-            putExtra("name", student.name)
-            putExtra("grade", student.grade)
-            putExtra("roomNo", student.roomNo)
-            putExtra("fatherName", student.fatherName)
-            putExtra("gender", student.gender)
-        }
+
+        val intent = Intent(this, AddStudentActivity::class.java)
+        val studentModel = StudentModel(
+            student.studentId,
+            student.name,
+            student.grade,
+            student.roomNo,
+            student.gender,
+            student.fatherName,
+        )
+        intent.putExtra("student", studentModel)
         startActivity(intent)
     }
 
     // Delete student from database and update the list
-    private fun deleteStudent(student: StudentModel) {
-        studentDataBase.deleteStudent(student.studentId)
-        adapter.updateList(studentDataBase.getAllStudents())
+    private fun deleteStudent(context: Context, student: StudentModel) {
+        AlertDialog.Builder(context)
+            .setTitle("Delete Student")
+            .setMessage("Are you sure you want to delete ${student.name}?")
+            .setPositiveButton("Yes") { dialog, _ ->
+                studentDataBase.deleteStudent(student.studentId)
+                adapter.updateList(studentDataBase.getAllStudents())
+                dialog.dismiss()
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+
     }
 }
